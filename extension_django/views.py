@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, filters, status
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from .models import Employee
 from .serializers import EmployeeSerializer
 
@@ -30,9 +31,11 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     ordering_fields = ['name', 'department', 'created_at']
     ordering = ['name']
 
-    def create_employee(self, request, *args, **kwargs):
+    
+    def create(self, request, *args, **kwargs):
         """
             Creating New Employee From Frontend
+            This overrides the default create method
         """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -46,9 +49,10 @@ class EmployeeViewSet(viewsets.ModelViewSet):
             status=status.HTTP_201_CREATED
         )
 
-    def update_employee(self, request, *args, **kwargs):
+    def update(self, request, *args, **kwargs):
         """
             Updating existing Employee From Frontend
+            This overrides the default update method
         """
         partial = kwargs.pop('partial', False)
         employee = self.get_object()
@@ -64,9 +68,10 @@ class EmployeeViewSet(viewsets.ModelViewSet):
              status=status.HTTP_200_OK
         )
 
-    def delete_employee(self, request, *args, **kwargs):
+    def destroy(self, request, *args, **kwargs):
         """
             Deleting Employee From Frontend
+            This overrides the default destroy method
         """
         employee = self.get_object()
         employee_name = employee.name
@@ -74,10 +79,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
 
         return Response(
             {
-                "message": "Employee '{employee_name}' deleted successfully"
+                "message": f"Employee '{employee_name}' deleted successfully"
             }, 
             status=status.HTTP_204_NO_CONTENT
         )
-
-
-
